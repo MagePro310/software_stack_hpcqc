@@ -26,7 +26,7 @@ It uses **gRPC** for efficient, low-latency communication, allowing HPC applicat
 First, clone the repository and set up your Python environment:
 
 ```bash
-git clone <repository_url>
+git clone https://github.com/MagePro310/software_stack_hpcqc.git
 cd software_stack_hpcqc
 
 # Create and activate a virtual environment
