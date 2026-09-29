@@ -1,0 +1,4 @@
+grpcio>=1.60,<2
+protobuf>=5,<7
+qiskit>=2,<3
+qiskit-aer>=0.17,<1

@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package hpqc.communication.v1;
+
+// Minimal, versioned contract between an HPC application and a QC server.
+service QuantumService {
+  rpc Invoke(QuantumRequest) returns (QuantumResponse);
+}
+
+message QuantumRequest {
+  // Logical quantum function, e.g. "bell" now, "vqe"/"qaoa" later.
+  string function_name = 1;
+
+  // Generic function input. JSON keeps the MVP small while protobuf
+  // still defines and versions the transport contract.
+  string input_json = 2;
+
+  uint32 shots = 3;
+}
+
+message QuantumResponse {
+  string result_json = 1;
+  string backend = 2;
+}
