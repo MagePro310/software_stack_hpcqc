@@ -28,8 +28,8 @@ class QuantumClient:
             "result": json.loads(response.result_json),
         }
 
-    def bell(self, shots: int = 1024):
-        return self.invoke("bell", {}, shots)
+    def bell(self, inputs: dict = None, shots: int = 1024):
+        return self.invoke("bell", inputs or {}, shots)
 
 
 def main() -> None:
