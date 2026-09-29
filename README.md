@@ -1,91 +1,38 @@
-# Minimal HPC-QC Communication (gRPC + Protobuf)
+# HPC-QC Communication Stack
 
-This repository is intentionally limited to the smallest reusable communication layer between an HPC application and a QC server.
+This repository provides a gRPC communication layer between an High-Performance Computing (HPC) application and a Quantum Computing (QC) server. 
 
-```text
-HPC application
-      |
-      | gRPC + Protobuf
-      v
-QC server
-      |
-      | execute quantum function
-      v
-QC backend / simulator
-      |
-      v
-result -> HPC application
-```
+## 1. Installation
 
-## Repository layout
-
-```text
-hpqc-communication-minimal/
-|
-|-- proto/
-|   `-- hpqc/communication/v1/
-|       `-- quantum.proto          # source of truth for the wire contract
-|
-|-- hpqc/
-|   |-- communication/v1/
-|   |   |-- quantum_pb2.py         # generated protobuf messages
-|   |   `-- quantum_pb2_grpc.py    # generated gRPC bindings
-|   |
-|   |-- hpc/
-|   |   `-- client.py              # code that runs on the HPC side
-|   |
-|   `-- qc/
-|       |-- server.py              # starts the gRPC server
-|       |-- service.py             # gRPC request handling and dispatch
-|       `-- services/
-|           |-- __init__.py        # supported-function registry
-|           `-- bell.py            # Qiskit Aer Bell implementation
-|
-|-- scripts/
-|   `-- generate_proto.sh
-|
-|-- requirements.txt               # runtime dependencies only
-|-- requirements-dev.txt           # adds grpcio-tools for proto generation
-`-- Dockerfile                     # optional QC server container
-```
-
-## Protocol
-
-The entire v1 API has one RPC:
-
-```proto
-service QuantumService {
-  rpc Invoke(QuantumRequest) returns (QuantumResponse);
-}
-```
-
-The protobuf envelope is versioned. For the MVP, function inputs and outputs are JSON strings inside the protobuf messages so new demo functions can be added without repeatedly changing the schema.
-
-## Install
+First, set up your Python environment and install the required dependencies:
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
+*(Note: The `grpcio-tools` compiler is not required at runtime as the generated protocol files are already included).*
 
-The generated `*_pb2.py` files are committed, so `grpcio-tools` is not required at runtime.
+## 2. Start the Quantum Server (QC Side)
 
-## Start the QC server
-
-On the QC machine:
+To start the quantum backend server, run the following command on the QC machine:
 
 ```bash
 python -m hpqc.qc.server --host 0.0.0.0 --port 50051
 ```
 
-Expected output:
-
+**Expected output:**
 ```text
 QC server listening on 0.0.0.0:50051
 ```
 
-## Call it from the HPC machine
+## 3. Connect from the HPC Machine (Client Side)
+
+You can interact with the QC server either via the Command Line Interface (CLI) or directly within your Python scripts.
+
+### Option A: Using the CLI
+
+Run the client script to send a quantum task (e.g., the `bell` function) to the server:
 
 ```bash
 python -m hpqc.hpc.client \
@@ -93,15 +40,9 @@ python -m hpqc.hpc.client \
   --function bell \
   --shots 1024
 ```
+*(Use `--server localhost:50051` for local testing).*
 
-For local testing:
-
-```bash
-python -m hpqc.hpc.client --server localhost:50051
-```
-
-Example response:
-
+**Example Response:**
 ```json
 {
   "backend": "aer_simulator",
@@ -115,68 +56,32 @@ Example response:
 }
 ```
 
-## Use it from an HPC application
+### Option B: Using Python in an HPC Application
+
+You can integrate the client directly into your HPC application workflows:
 
 ```python
 from hpqc.hpc.client import QuantumClient
 
+# Connect to the QC server
 qc = QuantumClient("10.0.0.20:50051")
 
-x = "classical result"
-
+# Request a quantum simulation (e.g., Bell state)
 quantum_result = qc.bell(shots=1024)
 
+print("Quantum Execution Result:")
 print(quantum_result)
 
+# Close the connection
 qc.close()
 ```
 
-The Bell result is produced by a Qiskit Aer simulation with a fixed seed of 42.
-Later, the same application can call functions such as `vqe`, `qaoa`, or another
-domain-specific function while the QC server decides how to build and execute
-the corresponding circuit.
+## 4. Run QC Server via Docker (Optional)
 
-## Docker for the QC server
+If you prefer using Docker for the QC server, you can build and run the container using:
 
 ```bash
 docker build -t hpqc-qc-server:0.1 .
 docker run --rm -p 50051:50051 hpqc-qc-server:0.1
 ```
-
-The HPC client does not need Docker.
-
-## Regenerate protobuf code
-
-Only needed when `quantum.proto` changes:
-
-```bash
-pip install -r requirements-dev.txt
-./scripts/generate_proto.sh
-```
-
-## Add another quantum function
-
-Quantum functions live in `hpqc/qc/services/`. Each handler accepts the decoded
-JSON input and shot count, then returns a JSON-ready result and its backend name:
-
-```python
-def execute(inputs, shots):
-    result = {"value": "function-specific result", "input": inputs}
-    return result, "backend-name"
-```
-
-Register the handler in `hpqc/qc/services/__init__.py`:
-
-```python
-from hpqc.qc.services import bell, new_function
-
-FUNCTION_HANDLERS = {
-    "bell": bell.execute,
-    "new-function": new_function.execute,
-}
-```
-
-The gRPC dispatcher does not need to change when a function is added. Keep
-`proto/hpqc/communication/v1/quantum.proto` stable until a real protocol change
-is necessary. If a breaking protocol is needed later, add `v2` instead of
-overwriting `v1`.
+*(The HPC client does not require Docker to run).*
