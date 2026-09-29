@@ -7,6 +7,7 @@ import grpc
 
 from hpqc.communication.v1 import quantum_pb2, quantum_pb2_grpc
 from hpqc.qc.services import FUNCTION_HANDLERS
+from hpqc.qc.queue import task_queue
 
 
 LOGGER = logging.getLogger(__name__)
@@ -30,7 +31,7 @@ class QuantumService(quantum_pb2_grpc.QuantumServiceServicer):
             context.abort(grpc.StatusCode.INVALID_ARGUMENT, f"invalid input_json: {exc}")
 
         try:
-            result, backend = self._execute(function_name, inputs, shots)
+            result, backend = task_queue.execute_sync(self._execute, function_name, inputs, shots)
         except KeyError:
             context.abort(
                 grpc.StatusCode.NOT_FOUND,
