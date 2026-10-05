@@ -39,11 +39,11 @@ class QuantumService(quantum_pb2_grpc.QuantumServiceServicer):
             )
         except ValueError as exc:
             context.abort(grpc.StatusCode.INVALID_ARGUMENT, str(exc))
-        except RuntimeError:
-            LOGGER.exception("quantum function %r failed", function_name)
+        except Exception as exc:
+            LOGGER.exception("quantum function %r failed: %s", function_name, exc)
             context.abort(
                 grpc.StatusCode.INTERNAL,
-                f"quantum function failed: {function_name}",
+                f"quantum function failed: {function_name} ({exc})",
             )
 
         return quantum_pb2.QuantumResponse(

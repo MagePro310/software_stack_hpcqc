@@ -9,12 +9,11 @@ class BasisDecoder(BaseDecoder):
 
     def decode(self) -> QuantumCircuit:
         """
-        Temporarily returns an empty circuit as requested.
-        Normally this would return a measurement circuit.
+        Create a measurement circuit in the computational (Z) basis.
         
         Returns:
-            An empty QuantumCircuit.
+            A QuantumCircuit with measurements mapped to classical bits.
         """
-        circuit = QuantumCircuit(self.num_qubits)
-        # Tạm thời để trống (không thêm cổng đo)
+        circuit = QuantumCircuit(self.num_qubits, self.num_qubits)
+        circuit.measure(range(self.num_qubits), range(self.num_qubits))
         return circuit

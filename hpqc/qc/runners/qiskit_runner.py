@@ -16,6 +16,7 @@ class AerSimulatorRunner(BaseRunner):
             seed: Seed for the simulator (default 42 for reproducible results).
         """
         self.seed = seed
+        self._simulator = AerSimulator()
 
     def run(self, circuit: QuantumCircuit, shots: int, **kwargs) -> tuple[dict[str, int], str]:
         """Chạy một QuantumCircuit trên AerSimulator và trả về counts."""
@@ -23,11 +24,10 @@ class AerSimulatorRunner(BaseRunner):
             raise ValueError("shots must be >= 1")
 
         try:
-            simulator = AerSimulator()
-            compiled_circuit = transpile(circuit, simulator)
+            compiled_circuit = transpile(circuit, self._simulator)
             
             # Chạy simulator
-            simulation_result = simulator.run(
+            simulation_result = self._simulator.run(
                 compiled_circuit,
                 shots=shots,
                 seed_simulator=self.seed,

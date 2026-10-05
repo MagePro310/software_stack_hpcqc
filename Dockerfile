@@ -1,7 +1,8 @@
 FROM python:3.11-slim
 
-# Set working directory
+# Set working directory and environment variables
 WORKDIR /app
+ENV PYTHONUNBUFFERED=1
 
 # Copy requirements and install dependencies
 COPY requirements.txt .

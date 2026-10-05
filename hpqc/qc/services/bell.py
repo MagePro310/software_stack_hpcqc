@@ -28,9 +28,6 @@ def execute(inputs: Any, shots: int) -> tuple[dict[str, Any], str]:
     # Mạch tổng = Encode + Algorithm + Decode
     full_circuit = encode_circ.compose(algo_circ).compose(decode_circ)
     
-    # Do decode tạm thời để trống, ta phải add measure vào cuối để giả lập chạy
-    full_circuit.measure_all()
-    
     # 4. Thực thi
     counts, backend_name = runner.run(full_circuit, shots)
     

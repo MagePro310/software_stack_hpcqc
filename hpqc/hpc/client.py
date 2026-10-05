@@ -10,16 +10,23 @@ from hpqc.communication.v1 import quantum_pb2, quantum_pb2_grpc
 
 class QuantumClient:
     def __init__(self, server: str):
+        self._server = server
         self._channel = grpc.insecure_channel(server)
         self._stub = quantum_pb2_grpc.QuantumServiceStub(self._channel)
 
     def close(self) -> None:
         self._channel.close()
 
-    def invoke(self, function_name: str, inputs=None, shots: int = 1024):
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
+    def invoke(self, function_name: str, inputs: dict | list | None = None, shots: int = 1024):
         request = quantum_pb2.QuantumRequest(
             function_name=function_name,
-            input_json=json.dumps(inputs or {}),
+            input_json=json.dumps(inputs if inputs is not None else {}),
             shots=shots,
         )
         response = self._stub.Invoke(request)
@@ -28,8 +35,8 @@ class QuantumClient:
             "result": json.loads(response.result_json),
         }
 
-    def bell(self, inputs: dict = None, shots: int = 1024):
-        return self.invoke("bell", inputs or {}, shots)
+    def bell(self, inputs: dict | None = None, shots: int = 1024):
+        return self.invoke("bell", inputs, shots)
 
 
 def main() -> None:
