@@ -9,4 +9,5 @@ services:
     restart: unless-stopped
     environment:
       - PYTHONUNBUFFERED=1
-
+      - HPQC_LOG_LEVEL=INFO
+      - HPQC_LOG_COLOR=1

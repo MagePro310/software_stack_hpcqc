@@ -12,15 +12,10 @@ Khung tích hợp hiệu năng cao kết nối các cụm tính toán cổ đi�
 
 ## 📑 Mục lục
 
-- [HPC-QC Communication Stack (Quantum-HPC Integration)](#hpc-qc-communication-stack-quantum-hpc-integration)
 - [HPC-QC Communication Stack (Quantum-HPC Integration Framework)](#hpc-qc-communication-stack-quantum-hpc-integration-framework)
-  - [🌟 Key Features](#-key-features)
   - [📑 Mục lục](#-mục-lục)
-  - [🏗 Architecture Overview](#-architecture-overview)
   - [1. Tính năng nổi bật](#1-tính-năng-nổi-bật)
-  - [🚀 Getting Started](#-getting-started)
   - [2. Sơ đồ kiến trúc hệ thống](#2-sơ-đồ-kiến-trúc-hệ-thống)
-    - [1. Installation](#1-installation)
     - [2.1. Kiến trúc phân tán tổng thể (Distributed Architecture)](#21-kiến-trúc-phân-tán-tổng-thể-distributed-architecture)
     - [2.2. Vòng đời xử lý tác vụ lượng tử (Task Execution Lifecycle)](#22-vòng-đời-xử-lý-tác-vụ-lượng-tử-task-execution-lifecycle)
   - [3. Chi tiết các khối chức năng (Component Deep-Dive)](#3-chi-tiết-các-khối-chức-năng-component-deep-dive)
@@ -30,21 +25,14 @@ Khung tích hợp hiệu năng cao kết nối các cụm tính toán cổ đi�
     - [4.1. Cài đặt môi trường Python (Venv / Conda)](#41-cài-đặt-môi-trường-python-venv--conda)
       - [Cách 1: Sử dụng Python venv chuẩn](#cách-1-sử-dụng-python-venv-chuẩn)
       - [Cách 2: Sử dụng Conda](#cách-2-sử-dụng-conda)
-    - [2. Start the Quantum Server (QC Node)](#2-start-the-quantum-server-qc-node)
     - [4.2. Triển khai bằng Docker (Dành cho QC Server)](#42-triển-khai-bằng-docker-dành-cho-qc-server)
     - [4.3. Thiết lập môi trường phát triển (Development Setup)](#43-thiết-lập-môi-trường-phát-triển-development-setup)
     - [4.4. Cấu hình mạng giữa hai máy vật lý (Multi-Node Setup)](#44-cấu-hình-mạng-giữa-hai-máy-vật-lý-multi-node-setup)
   - [5. Kịch bản Demo \& Kiểm thử cụ thể (Hands-on Demos \& Testing)](#5-kịch-bản-demo--kiểm-thử-cụ-thể-hands-on-demos--testing)
-    - [3. Run the HPC Client (HPC Node)](#3-run-the-hpc-client-hpc-node)
     - [Demo 1: Kiểm tra nhanh qua giao diện CLI](#demo-1-kiểm-tra-nhanh-qua-giao-diện-cli)
-      - [Option A: Running the Example Script](#option-a-running-the-example-script)
-      - [Option B: Using Python directly in your application](#option-b-using-python-directly-in-your-application)
-  - [You can easily integrate quantum calls into your existing HPC pipelines:](#you-can-easily-integrate-quantum-calls-into-your-existing-hpc-pipelines)
     - [Demo 2: Chạy script mẫu tích hợp (`run_hpc_example.py`)](#demo-2-chạy-script-mẫu-tích-hợp-run_hpc_examplepy)
     - [Demo 3: Nhúng Client vào ứng dụng Python HPC](#demo-3-nhúng-client-vào-ứng-dụng-python-hpc)
-      - [Option C: Using the Command Line Interface (CLI)](#option-c-using-the-command-line-interface-cli)
     - [Demo 4: Kiểm thử chịu tải \& Hàng đợi FCFS đa luồng](#demo-4-kiểm-thử-chịu-tải--hàng-đợi-fcfs-đa-luồng)
-  - [🐳 Docker Deployment (Optional)](#-docker-deployment-optional)
     - [Demo 5: Chạy bộ kiểm thử tự động (Unit Tests với Pytest)](#demo-5-chạy-bộ-kiểm-thử-tự-động-unit-tests-với-pytest)
   - [6. Hướng dẫn mở rộng thuật toán mới](#6-hướng-dẫn-mở-rộng-thuật-toán-mới)
     - [Bước 1: Xây dựng mạch lượng tử](#bước-1-xây-dựng-mạch-lượng-tử)
@@ -387,7 +375,7 @@ python -m hpqc.hpc.client \
 Dự án cung cấp sẵn script `run_hpc_example.py` minh họa cả hai trường hợp: không có data và có data encoding:
 
 ```bash
-python run_hpc_example.py --server localhost:50051 --shots 10000
+python run_hpc_example.py --server localhost:50051 --shots 1000000
 ```
 
 **Kết quả hiển thị:**
