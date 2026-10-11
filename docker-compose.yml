@@ -1,0 +1,12 @@
+services:
+  qc-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hpqc_qc_server
+    ports:
+      - "50051:50051"
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+
